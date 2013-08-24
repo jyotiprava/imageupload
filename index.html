@@ -10,6 +10,7 @@
     // Called when capture operation is finished
     //
     function captureSuccess(mediaFiles) {
+      alert(capture);
         var i, len;
         for (i = 0, len = mediaFiles.length; i < len; i += 1) {
             uploadFile(mediaFiles[i]);
@@ -28,6 +29,7 @@
     function captureImage() {
         // Launch device camera application, 
         // allowing user to capture up to 2 images
+        alert(12);
         navigator.device.capture.captureImage(captureSuccess, captureError, {limit: 2});
     }
 
@@ -40,11 +42,11 @@
         ft.upload(path,
             "http://50.56.237.229/demos/app/image_upload.php",
             function(result) {
-                console.log('Upload success: ' + result.responseCode);
-                console.log(result.bytesSent + ' bytes sent');
+                alert('Upload success: ' + result.responseCode);
+                alert(result.bytesSent + ' bytes sent');
             },
             function(error) {
-                console.log('Error uploading file ' + path + ': ' + error.code);
+                alert('Error uploading file ' + path + ': ' + error.code);
             },
             { fileName: name });   
     }
