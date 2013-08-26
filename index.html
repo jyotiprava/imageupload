@@ -1,60 +1,62 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-  <head>
-    <title>Capture Image</title>
+<head>
+    <title>File Transfer Example</title>
 
-    
-    <script type="text/javascript" charset="utf-8" src="json2.js"></script>
+   
     <script type="text/javascript" charset="utf-8">
 
-    // Called when capture operation is finished
-    //
-    function captureSuccess(mediaFiles) {
-      alert("capture");
-        var i, len;
-        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
-            uploadFile(mediaFiles[i]);
-        }       
-    }
+        // Wait for PhoneGap to load
+        //
+        document.addEventListener("deviceready", onDeviceReady, false);
 
-    // Called if something bad happens.
-    // 
-    function captureError(error) {
-        var msg = 'An error occurred during capture: ' + error.code;
-        alert(msg);
-        navigator.notification.alert(msg, null, 'Uh oh!');
-    }
+        // PhoneGap is ready
+        //
+        function onDeviceReady() {
+          alert("deviceready");
+            // Retrieve image file location from specified source
+            navigator.camera.getPicture(uploadPhoto,
+                                        function(message) { alert('get picture failed'); },
+                                        { quality: 50, 
+                                        destinationType: navigator.camera.DestinationType.FILE_URI,
+                                        sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY }
+                                        );
 
-    // A button will call this function
-    //
-    function captureImage() {
-        // Launch device camera application, 
-        // allowing user to capture up to 2 images
-        alert(12);
-        navigator.device.capture.captureImage(captureSuccess, captureError, {limit: 2});
-    }
+        }
 
-    // Upload files to server
-    function uploadFile(mediaFile) {
-        var ft = new FileTransfer(),
-            path = mediaFile.fullPath,
-            name = mediaFile.name;
+        function uploadPhoto(imageURI) {
+          alert("uploadphoto");
+            var options = new FileUploadOptions();
+            options.fileKey="file";
+            options.fileName=imageURI.substr(imageURI.lastIndexOf('/')+1);
+            options.mimeType="image/jpeg";
 
-        ft.upload(path,
-            "http://50.56.237.229/demos/app/image_upload.php",
-            function(result) {
-                alert('Upload success: ' + result.responseCode);
-                alert(result.bytesSent + ' bytes sent');
-            },
-            function(error) {
-                alert('Error uploading file ' + path + ': ' + error.code);
-            },
-            { fileName: name });   
-    }
+            var params = new Object();
+            params.value1 = "test";
+            params.value2 = "param";
 
-    </script>
-    </head>
-    <body>
-        <button onclick="captureImage();">Capture Image</button> <br>
-    </body>
+            options.params = params;
+
+            var ft = new FileTransfer();
+            ft.upload(imageURI, "http://50.56.237.229/demos/app/image_upload.php", win, fail, options);
+        }
+
+        function win(r) {
+            alert("Code = " + r.responseCode);
+            alert("Response = " + r.response);
+            alert("Sent = " + r.bytesSent);
+        }
+
+        function fail(error) {
+            alert("An error has occurred: Code = " = error.code);
+            alert("upload error source " + error.source);
+            alert("upload error target " + error.target);
+        }
+
+        </script>
+</head>
+<body>
+    <h1>Example</h1>
+    <p>Upload File</p>
+</body>
 </html>
